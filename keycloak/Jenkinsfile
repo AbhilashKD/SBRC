@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    parameters {
+      booleanParam(name: 'REMOTE', defaultValue: false)
+	string(name: "IP", defaultValue: "xx.xx.xx.xx", description: "Ip address")
+    }
+    stages {
+        stage('Run Script') {
+            steps {
+                sh 'echo "Hello script is about run"'
+            }
+        }    
+    stage ('Deploy') {
+	when {
+                expression { return params.REMOTE }
+            }
+      steps{
+          sshagent(credentials : ['test-server']) {
+		sh "scp ${WORKSPACE}/docker-compose.yml  ubuntu@'${params.IP}' mkdir -p /home/ubuntu/keycloak"
+            sh "scp ${WORKSPACE}/docker-compose.yml  ubuntu@'${params.IP}'/home/ubuntu/keycloak"
+            sh "scp ${WORKSPACE}/.env  ubuntu@'${params.IP}' /home/ubuntu/keycloak"
+            sh "scp ${WORKSPACE}/script.sh  ubuntu@'${params.IP}' /home/ubuntu/keycloak"
+            sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' chmod +x /home/ubuntu/keycloak/script.sh"
+            sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' 'cd /home/ubuntu/keycloak && sh script.sh'"
+          }
+       }
+    }
+  }
+}
