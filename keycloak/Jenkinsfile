@@ -16,10 +16,10 @@ pipeline {
             }
       steps{
           sshagent(credentials : ['test-server']) {
-		sh "scp ${WORKSPACE}/docker-compose.yml  ubuntu@'${params.IP}' mkdir -p /home/ubuntu/keycloak"
-            sh "scp ${WORKSPACE}/docker-compose.yml  ubuntu@'${params.IP}'/home/ubuntu/keycloak"
-            sh "scp ${WORKSPACE}/.env  ubuntu@'${params.IP}' /home/ubuntu/keycloak"
-            sh "scp ${WORKSPACE}/script.sh  ubuntu@'${params.IP}' /home/ubuntu/keycloak"
+	    sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' mkdir -p /home/ubuntu/keycloak"
+            sh "scp ${WORKSPACE}/keycloak/docker-compose.yml  ubuntu@'${params.IP}':/home/ubuntu/keycloak/"
+            sh "scp ${WORKSPACE}/keycloak/.env  ubuntu@'${params.IP}':/home/ubuntu/keycloak/"
+            sh "scp ${WORKSPACE}/keycloak/script.sh  ubuntu@'${params.IP}':/home/ubuntu/keycloak/"
             sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' chmod +x /home/ubuntu/keycloak/script.sh"
             sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' 'cd /home/ubuntu/keycloak && sh script.sh'"
           }
@@ -27,3 +27,4 @@ pipeline {
     }
   }
 }
+
