@@ -32,3 +32,5 @@ services:
 
 networks:
   local-keycloak:
+volumes:
+  realm-export.json:
