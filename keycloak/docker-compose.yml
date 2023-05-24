@@ -23,7 +23,7 @@ services:
       DB_PASSWORD: ${POSTGRESQL_PASS}
     image: jboss/keycloak:${KEYCLOAK_VERSION}
     volumes:
-      - ./realm-export.json:/opt/jboss/keycloak/imports/realm-export.json
+      - realm-export.json:/opt/jboss/keycloak/imports/realm-export.json
     ports:
       - "8081:8080"
     restart: unless-stopped
