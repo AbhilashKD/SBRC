@@ -18,6 +18,11 @@ services:
     environment:
       DB_VENDOR: postgres
       DB_PORT: 5432
+      sunbird_sso_realm: sunbird-rc
+      sunbird_sso_url: https://script-demo.uniteframework.io/auth
+      sunbird_sso_admin_client_id: admin-api
+      sunbird_sso_client_id: registry-frontend
+      sunbird_sso_admin_client_secret: 4a858f16-6023-4f23-bda2-1bc4df1a3e7e
       #KEYCLOAK_USER: admin
       #KEYCLOAK_PASSWORD: admin
       #KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
@@ -26,7 +31,7 @@ services:
       DB_USER: ${POSTGRESQL_USER}
       DB_PASSWORD: ${POSTGRESQL_PASS}
       PROXY_ADDRESS_FORWARDING: 'true'
-      KEYCLOAK_FRONTEND_URL: https://test-devops.uniteframework.io/auth
+      KEYCLOAK_FRONTEND_URL: https://script-demo.uniteframework.io/auth
     image: dockerhub/sunbird-rc-keycloak:latest  # jboss/keycloak
     volumes:
       - realm-export.json:/opt/jboss/keycloak/imports/realm-export.json
