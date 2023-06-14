@@ -1,0 +1,38 @@
+version: '3.3'
+
+services:
+        #postgres:
+        #image: postgres:13.2
+        #restart: unless-stopped
+        # environment:
+        # POSTGRES_DB: metabase
+        # POSTGRES_USER: metabase
+        #POSTGRES_PASSWORD: metabase
+        # networks:
+        #- local-keycloak
+
+  
+  metabase:
+    image: metabase/metabase
+    user: root
+    ports:
+      - "3006:3000"
+    restart: unless-stopped
+    volumes:
+     - ./plugins:/tmp/
+     
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: keycloak
+      MB_DB_PASS: keycloak
+      MB_DB_HOST: postgres
+    networks:
+      - keycloak_local-keycloak
+
+networks:
+    keycloak_local-keycloak:
+      external: true
+volumes:
+  plugins:

@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    parameters {
+      booleanParam(name: 'REMOTE', defaultValue: false)
+	string(name: "IP", defaultValue: "xx.xx.xx.xx", description: "Ip address")
+    }
+    stages {
+        stage('Run Script') {
+            steps {
+                sh 'echo "Hello script is about run"'
+            }
+        }    
+    stage ('Deploy') {
+	when {
+                expression { return params.REMOTE }
+            }
+      steps{
+          sshagent(credentials : ['test-server']) {
+	    sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' mkdir -p /home/ubuntu/metabase"
+            sh "scp ${WORKSPACE}/metabase/docker-compose.yml  ubuntu@'${params.IP}':/home/ubuntu/metabase/"
+            sh "scp ${WORKSPACE}/metabase/script.sh  ubuntu@'${params.IP}':/home/ubuntu/metabase/"
+	    sh "scp ${WORKSPACE}/metabase/plugins ubuntu@'${params.IP}':/home/ubuntu/metabase/"
+            sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' chmod +x /home/ubuntu/metabase/script.sh"
+            sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' 'cd /home/ubuntu/metabase && sh script.sh'"
+          }
+       }
+    }
+  }
+}
+

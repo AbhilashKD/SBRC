@@ -1,0 +1,24 @@
+version: '3.1'
+services:
+  telemetry_service_clickhouse:
+    image: clickhouse/clickhouse-server
+    # volumes:
+    # - /root/ulp-registry/telemetry/config/data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_USER : clickhouse
+      CLICKHOUSE_PASSWORD : "*!73uK*9xLEsnhIR" 
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+  telemetry-service:
+    image: suraj206/telemetry-service:main
+    ports:
+      - 9009:9001
+    environment:
+      telemetry_local_storage_type: "clickhouse"
+      #CLICKHOUSE_HOST : "http://ulp_telemetry_service_clickhouse:8123"
+      CLICKHOUSE_HOST : "telemetry_service_clickhouse:8123"
+      CLICKHOUSE_USER : "clickhouse"
+      CLICKHOUSE_PASSWORD : "*!73uK*9xLEsnhIR" 
+    depends_on:
+      - telemetry_service_clickhouse

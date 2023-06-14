@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    parameters {
+      booleanParam(name: 'REMOTE', defaultValue: false)
+	string(name: "IP", defaultValue: "xx.xx.xx.xx", description: "Ip address")
+    }
+    stages {
+        stage('Run Script') {
+            steps {
+                sh 'echo "Hello script is about run"'
+            }
+        }    
+    stage ('Deploy') {
+	when {
+                expression { return params.REMOTE }
+            }
+      steps{
+          sshagent(credentials : ['test-server']) {
+	    sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' mkdir -p /home/ubuntu/telemetry"
+            sh "scp ${WORKSPACE}/telemetry/docker-compose.yml  ubuntu@'${params.IP}':/home/ubuntu/telemetry/"
+            sh "scp ${WORKSPACE}/telemetry/script.sh  ubuntu@'${params.IP}':/home/ubuntu/telemetry/"
+            sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' chmod +x /home/ubuntu/telemetry/script.sh"
+            sh "ssh -o StrictHostKeyChecking=no ubuntu@'${params.IP}' 'cd /home/ubuntu/telemetry && sh script.sh'"
+          }
+       }
+    }
+  }
+}
+

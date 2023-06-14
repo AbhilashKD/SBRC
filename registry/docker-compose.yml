@@ -1,0 +1,56 @@
+version: "2.4"
+
+services:
+  es:
+          image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+          environment:
+              - discovery.type=single-node
+              - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+              - ELASTIC_PASSWORD=
+              - xpack.security.enabled=false
+          volumes:
+            - /home/ubuntu/sunbird-rc/data/es:/usr/share/elasticsearch/data
+          ports:
+            - "9200:9200"
+            - "9300:9300"
+   # healthcheck:
+   #   test: [ "CMD", "curl", "-f", "localhost:9200/_cluster/health", "--header",  "Authorization: Basic ZWxhc3RpYzpEa0llZFBQU0Ni" ]
+   #   interval: 30s
+   #   timeout: 10s
+   #   retries: 4
+          networks:
+            - keycloak_local-keycloak
+
+
+
+
+  registry:
+    image: dockerhub/sunbird-rc-core:latest
+    volumes:
+      - ./config/schema:/home/sunbirdrc/config/public/_schemas
+    environment:
+      - connectionInfo_uri=jdbc:postgresql://postgres:5432/registry
+      - connectionInfo_username=keycloak
+      - connectionInfo_password=keycloak
+      - elastic_search_connection_url=es:9200
+      - elastic_search_auth_enabled=false
+      - elastic_search_username=
+      - elastic_search_password=
+      - search_providerName=dev.sunbirdrc.registry.service.ElasticSearchService
+      - sunbird_sso_realm=sunbird-rc
+      - sunbird_sso_url=http://keycloak:8080/auth
+      - sunbird_sso_admin_client_id=admin-api
+      - sunbird_sso_client_id=registry-frontend
+      - sunbird_sso_admin_client_secret=d0b8122f-8dfb-46b7-b68a-f5cc4e25d000
+      - signature_enabled=false
+      - registry_base_apis_enable=false
+      - sunbird_keycloak_user_password=admin
+      - logging.level.root=INFO
+      - authentication_enabled=true
+    ports:
+      - "8082:8081"
+    networks:
+      - keycloak_local-keycloak
+networks:
+  keycloak_local-keycloak:
+      external: true

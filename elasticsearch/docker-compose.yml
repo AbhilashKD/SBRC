@@ -1,0 +1,24 @@
+version: "2.4"
+
+services:
+  es:
+          image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+          environment:
+              - discovery.type=single-node
+              - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+              - ELASTIC_PASSWORD=
+              - xpack.security.enabled=false
+          volumes:
+            - /home/ubuntu/sunbird-rc/data/es:/usr/share/elasticsearch/data
+          ports:
+            - "9220:9200"
+            - "9320:9300"
+          networks:
+            - keycloak_local-keycloak
+
+
+
+
+networks:
+  keycloak_local-keycloak:
+      external: true
